@@ -9,6 +9,13 @@ const User = require('./models/User');
 require('dotenv').config();
 
 const app = express();
+app.enable('trust proxy');
+app.use((req, res, next) => {
+  if (req.headers['x-forwarded-proto'] !== 'https') {
+    return res.redirect('https://' + req.headers.host + req.url);
+  }
+  next();
+});
 app.use(cors());
 app.use(express.json());
 
@@ -28,30 +35,3 @@ app.use('/api/vote', voteRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-// const seedAdminUser = async () => {
-//   try {
-//     const existingAdmin = await User.findOne({ username: 'admin' });
-
-//     if (!existingAdmin) {
-//       const adminUser = new User({
-//         _id: new mongoose.Types.ObjectId('682604d7e7b9d6b322717afa'),
-//         name: 'Administrator',
-//         role: 'admin',
-//         nim: 'admin',
-//         passwordHash: '$2b$10$axuA5opDg0uQRfqnnmmZiuoz8nniSA/Gb01gUGoojNUUyvCMCEpk6',
-//         hasVoted: false,
-//         votedCandidateId: null
-//       });
-
-//       await adminUser.save();
-//       console.log('✅ Admin user created');
-//     } else {
-//       console.log('ℹ️ Admin user already exists');
-//     }
-//   } catch (error) {
-//     console.error('❌ Failed to seed admin user:', error);
-//   }
-// };
-
-// seedAdminUser();
