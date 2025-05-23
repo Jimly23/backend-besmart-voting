@@ -9,13 +9,6 @@ const User = require('./models/User');
 require('dotenv').config();
 
 const app = express();
-app.enable('trust proxy');
-app.use((req, res, next) => {
-  if (req.headers['x-forwarded-proto'] !== 'https') {
-    return res.redirect('https://' + req.headers.host + req.url);
-  }
-  next();
-});
 app.use(cors());
 app.use(express.json());
 
